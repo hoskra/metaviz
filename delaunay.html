@@ -47,6 +47,7 @@
     const {points,halfedges,triangles} = delaunay;
     const voronoi = delaunay.voronoi([offset, offset, W-offset, W-offset])
 
+    // https://github.com/jasonwebb/2d-voronoi-experiments/blob/d68eb40b131678a7f5480aaf3c225c2b555c4032/basic/js/entry.js#L96
     for (let cell of voronoi.cellPolygons()) {
       let polygon = [];
       for (let vertex of cell) { polygon.push([vertex[0], vertex[1]]); }

@@ -1,0 +1,158 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="canvas">
+  <meta name="author" content="hoskra">
+  <script src="libs/p5.min.js" type="text/javascript" defer></script>
+
+  <!-- <script src="libs/d3-delaunay@6.js" type="text/javascript" defer></script>
+    <script src="libs/d3-interpolate.min.js" type="text/javascript" defer></script>
+    <script src="libs/d3-color.min.js" type="text/javascript" defer></script> -->
+
+    <!-- <script src="libs/d3.min.js" type="text/javascript" charset="utf-8" defer></script> -->
+    <script src="libs/d3.v3.min.js" type="text/javascript" defer></script>
+    <script src="libs/d3-delaunay@6.js" type="text/javascript" defer></script>
+
+
+  <title>Spiral</title>
+  <style>
+    body {
+      margin: 0;
+    }
+  </style>
+</head>
+
+<body>
+</body>
+<script>
+// https://softwareengineering.stackexchange.com/questions/181285/randomly-generate-points-in-a-spiral-motion-using-javascript/181291
+
+size=50
+let f = 0
+let W = 600
+let p=[]
+
+let a = 5;
+let num = 40;
+let numArms = 1;
+
+TOGGLE_DELAUNAY = true
+TOGGLE_VORONOI = false
+
+
+function generatePoints() {
+  for(i=-size;i<=W+2*size;i+=size) {
+    for(j=-sqrt(3)*size;j<=W+2*sqrt(3)*size;j+=sqrt(3)*size) {
+      p.push([i, j])
+      p.push([i+size/2, j+(sqrt(3)*size)/2])
+    }
+  }
+}
+
+function setup() {
+  createCanvas(W, W)
+  generatePoints()
+}
+
+function draw() {
+  f += 0.01
+
+  background(255)
+  fill(0)
+
+  size=50
+  radius=size*2
+
+  // for(i=0;i<p.length;i++) {
+  //   p[i][0] += cos(f) *  noise(i) -  sin(f) *  noise(i);;
+  //   p[i][1] -= cos(f) *  noise(i) +  sin(f) *  noise(i);;
+  // }
+
+  for(i=0;i<p.length;i++) {
+    if(i%2==0) {
+      p[i][0] += cos(i+f)
+    } else {
+      p[i][1] += sin(i-f)
+    }
+  }
+
+
+  const delaunay = d3.Delaunay.from(p);
+  const { points,halfedges,triangles} = delaunay;
+  const voronoi = delaunay.voronoi([0, 0, W, W])
+  const circumcenters = voronoi.circumcenters;
+
+
+  strokeWeight(1)
+
+  const simplifiedPolygons = [];
+
+  for (let cell of voronoi.cellPolygons()) {
+    let polygon = [];
+    for (let vertex of cell)
+      polygon.push([vertex[0], vertex[1]]);
+    simplifiedPolygons.push(polygon);
+  }
+
+  stroke(0)
+  noStroke()
+
+  if(TOGGLE_DELAUNAY)
+  for (let i = 0; i < points.length; i++) {
+    const t0 = triangles[i * 3 + 0];
+    const t1 = triangles[i * 3 + 1];
+    const t2 = triangles[i * 3 + 2];
+    x = [points[t0 * 2], points[t0 * 2 + 1]];
+    y = [points[t1 * 2], points[t1 * 2 + 1]];
+    z = [points[t2 * 2], points[t2 * 2 + 1]];
+    line(x[0],x[1],y[0],y[1])
+    line(y[0],y[1],z[0],z[1])
+    line(z[0],z[1],x[0],x[1])
+
+    sx = (x[0] + y[0] + z[0]) / 3
+    sy = (x[1] + y[1] + z[1]) / 3
+
+    d = dist(sx, sy, W/2, W/2)
+    m = map(d, 250, 0, 1, 0)
+    // m = 255 - m
+
+    const c = d3.interpolate("blue", "pink")
+
+    fill(c(m))
+
+    // fill(m)
+    triangle(x[0], x[1], y[0], y[1], z[0], z[1])
+  }
+
+  stroke(255)
+  strokeWeight(0.1)
+
+  if(TOGGLE_VORONOI)
+  for (let i = 0; i < simplifiedPolygons.length; i++) {
+    let len = simplifiedPolygons[i].length
+    for (let j = 0; j < simplifiedPolygons[i].length - 1; j++) {
+      line(simplifiedPolygons[i][j][0], simplifiedPolygons[i][j][1],
+        simplifiedPolygons[i][(j + 1) % len][0], simplifiedPolygons[i][(j + 1) % len][1])
+    }
+  }
+
+  // fill(0)
+  // noStroke()
+  // stroke(1, 50)
+  // fill(0,0)
+
+  // for(i=0; i<circumcenters.length; i+=2) {
+  //   let x = circumcenters[i]
+  //   let y = circumcenters[i+1]
+  //   circle(x, y, 15)
+  //   circle(x, y, 100)
+  // }
+
+
+}
+
+</script>
+</html>
