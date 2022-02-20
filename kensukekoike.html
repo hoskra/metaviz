@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="canvas">
+  <meta name="author" content="hoskra">
+  <script src="libs/p5.min.js" type="text/javascript" defer></script>
+  <script src="libs/d3-delaunay@6.js" type="text/javascript" defer></script>
+  <title>kensukekoike</title>
+  <style>
+    body {
+      margin: 0;
+    }
+  </style>
+</head>
+
+<body>
+</body>
+<script>
+let W = 600;
+let img;
+let f = 0
+
+let images = []
+
+function preload() {
+  img = loadImage('img/2.jpg');
+
+  for(i=0; i<images.lenght; i++) {
+    images.push(img.get());
+  }
+}
+
+function drawCircle(radius) {
+  for (var y = -W/2; y < W/2; y++) {
+    for (var x = -W/2; x < W/2; x++) {
+      var index = (x+W/2 + (y+W/2) * W)*4;
+      if(pow(x,2)+pow(y,2) > pow(radius, 2)) {
+        img.pixels[index+3] = 0;
+      }
+    }
+  }
+
+  img.updatePixels();
+  image(img, -W/2, -W/2);
+}
+
+
+
+function setup() {
+  createCanvas(W, W);
+  noLoop();
+}
+
+function draw() {
+  f+=0.1
+  img.loadPixels();
+
+
+  noFill();
+
+  push();
+  translate(W/2, W/2);
+
+  image(img, -W/2, -W/2);
+
+  direction = -1
+  for(i=W-300; i>0; i-=30) {
+    drawCircle(i);
+    rotate(0.3*direction);
+  }
+
+  pop();
+}
+
+
+</script>
+</html>
