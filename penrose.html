@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="canvas">
+  <meta name="author" content="hoskra">
+  <script src="libs/three.js" defer></script>
+  <!-- <script src="libs/csg-lib.js" defer></script>
+  <script src="libs/three-csg.js" defer></script>
+  <script src="libs/csg-worker.js" defer></script> -->
+  <title>Penrose</title>
+  <style> body { margin: 0; } </style>
+</head>
+
+<script type="module">
+
+const camera = new THREE.PerspectiveCamera( 100, window.innerWidth / window.innerHeight, 0.01, 20 );
+camera.position.z = 1;
+
+function addMesh(geometry, material) {
+  const mesh = new THREE.Mesh(geometry, material);
+  scene.add(mesh);
+  return mesh;
+}
+
+const scene = new THREE.Scene();
+const renderer = new THREE.WebGLRenderer( { antialias: true } );
+renderer.setSize( window.innerWidth, window.innerHeight );
+renderer.setAnimationLoop( animation );
+document.body.appendChild( renderer.domElement );
+
+const geometry = new THREE.BoxGeometry( 0.5, 0.5, 0.5 );
+
+const texture = new THREE.TextureLoader().load( 'img/2.jpg' );
+const textureMat = new THREE.MeshBasicMaterial( { map: texture } );
+const colorMaterial = new THREE.MeshNormalMaterial();
+
+// const baseMat = new THREE.MeshBasicMaterial();
+// 				baseMat.depthWrite = false;
+// 				baseMat.depthTest = false;
+// 				baseMat.colorWrite = false;
+// 				baseMat.stencilWrite = true;
+// 				baseMat.stencilFunc = THREE.AlwaysStencilFunc;
+
+// let a = addMesh(geometry, textureMat);
+// let b = addMesh(geometry, colorMaterial);
+
+// let aa = CSG.fromMesh(a);
+// let bb = CSG.fromMesh(b);
+// let bspResult = aa.subtract(bb)
+
+let gg = [
+	new THREE.Vector3(-0.28, -0.24339745962155615, 0),
+	new THREE.Vector3(-0.33, -0.15679491924311229, 0),
+	new THREE.Vector3(0.07, -0.15679491924311229, 0),
+	new THREE.Vector3(-0.03, 0.016410161513775445, 0),
+	new THREE.Vector3(0.020000000000000004, 0.10301270189221931, 0),
+	new THREE.Vector3(0.22000000000000003, -0.24339745962155615, 0),
+]
+let bb = [
+	new THREE.Vector3(-0.33, -0.15679491924311229, 0),
+	new THREE.Vector3(0.07, -0.15679491924311229, 0),
+	new THREE.Vector3(0.020000000000000004, -0.07019237886466842, 0),
+	new THREE.Vector3(-0.18, -0.07019237886466842, 0),
+	new THREE.Vector3(0.020000000000000004, 0.276217782649107, 0),
+	new THREE.Vector3(-0.08, 0.276217782649107, 0),
+]
+let rr = [
+	new THREE.Vector3(0.22000000000000003, -0.24339745962155615, 0),
+	new THREE.Vector3(0.27, -0.15679491924311229, 0),
+	new THREE.Vector3(0.020000000000000004, 0.276217782649107, 0),
+	new THREE.Vector3(-0.18, -0.07019237886466842, 0),
+	new THREE.Vector3(-0.08, -0.07019237886466842, 0),
+	new THREE.Vector3(0.020000000000000004, 0.10301270189221931, 0),
+]
+
+const greenMat = new THREE.MeshBasicMaterial({color: 0x00ff00,side: THREE.DoubleSide,});
+const blueMat = new THREE.MeshBasicMaterial({color: 0x0000ff,side: THREE.DoubleSide,});
+const redMat = new THREE.MeshBasicMaterial({color: 0xff0000,side: THREE.DoubleSide,});
+
+var geomShape1 = new THREE.ShapeBufferGeometry(new THREE.Shape(gg));
+let ggPenrose = addMesh(geomShape1,  textureMat);
+var geomShape2 = new THREE.ShapeBufferGeometry(new THREE.Shape(bb));
+let bbPenrose = addMesh(geomShape2,  blueMat);
+var geomShape3 = new THREE.ShapeBufferGeometry(new THREE.Shape(rr));
+let rrPenrose = addMesh(geomShape3,  redMat);
+
+
+function animation( time ) {
+
+	ggPenrose.rotation.z = time / 10000;
+  bbPenrose.rotation.z = time / 10000;
+  rrPenrose.rotation.z = time / 10000;
+
+	renderer.render( scene, camera );
+
+}
+
+</script>
+</html>
