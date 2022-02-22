@@ -67,3 +67,21 @@ file.write("let rr = [\n")
 for i in range(0, len(rr)):
   file.write("\tnew THREE.Vector3(" + str(rr[i][0]) + ", " + str(rr[i][1]) + ", " + str(rr[i][2]) + "),\n")
 file.write("]\n")
+
+file2 = open("pen2.txt", "w")
+file2.write("[")
+for i in range(0, len(gg)):
+  file2.write("[" + str(gg[i][0]) + ", " + str(gg[i][1]) + "]")
+  if i != len(gg) - 1:
+    file2.write(", ")
+file2.write("]\n[")
+for i in range(0, len(bb)):
+  file2.write("[" + str(bb[i][0]) + ", " + str(bb[i][1]) + "]")
+  if i != len(gg) - 1:
+    file2.write(", ")
+file2.write("]\n[")
+for i in range(0, len(rr)):
+  file2.write("[" + str(rr[i][0]) + ", " + str(rr[i][1]) + "]")
+  if i != len(gg) - 1:
+    file2.write(", ")
+file2.write("]")

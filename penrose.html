@@ -7,6 +7,8 @@
   <meta name="description" content="canvas">
   <meta name="author" content="hoskra">
   <script src="libs/three.js" defer></script>
+	<script src="util/penroseUtils.js" defer></script>
+	<!-- <script src="libs/dat.gui.min.js" defer></script> -->
   <!-- <script src="libs/csg-lib.js" defer></script>
   <script src="libs/three-csg.js" defer></script>
   <script src="libs/csg-worker.js" defer></script> -->
@@ -31,68 +33,77 @@ renderer.setSize( window.innerWidth, window.innerHeight );
 renderer.setAnimationLoop( animation );
 document.body.appendChild( renderer.domElement );
 
-const geometry = new THREE.BoxGeometry( 0.5, 0.5, 0.5 );
-
+const geometry = new THREE.BoxGeometry(2,2,1 );
 const texture = new THREE.TextureLoader().load( 'img/2.jpg' );
-const textureMat = new THREE.MeshBasicMaterial( { map: texture } );
-const colorMaterial = new THREE.MeshNormalMaterial();
+let textureMat = new THREE.MeshBasicMaterial( { map: texture } );
 
-// const baseMat = new THREE.MeshBasicMaterial();
-// 				baseMat.depthWrite = false;
-// 				baseMat.depthTest = false;
-// 				baseMat.colorWrite = false;
-// 				baseMat.stencilWrite = true;
-// 				baseMat.stencilFunc = THREE.AlwaysStencilFunc;
+let a = addMesh(geometry, textureMat);
+a.position.z = -0.5;
 
-// let a = addMesh(geometry, textureMat);
-// let b = addMesh(geometry, colorMaterial);
 
-// let aa = CSG.fromMesh(a);
-// let bb = CSG.fromMesh(b);
-// let bspResult = aa.subtract(bb)
-
-let gg = [
-	new THREE.Vector3(-0.28, -0.24339745962155615, 0),
-	new THREE.Vector3(-0.33, -0.15679491924311229, 0),
-	new THREE.Vector3(0.07, -0.15679491924311229, 0),
-	new THREE.Vector3(-0.03, 0.016410161513775445, 0),
-	new THREE.Vector3(0.020000000000000004, 0.10301270189221931, 0),
-	new THREE.Vector3(0.22000000000000003, -0.24339745962155615, 0),
-]
-let bb = [
-	new THREE.Vector3(-0.33, -0.15679491924311229, 0),
-	new THREE.Vector3(0.07, -0.15679491924311229, 0),
-	new THREE.Vector3(0.020000000000000004, -0.07019237886466842, 0),
-	new THREE.Vector3(-0.18, -0.07019237886466842, 0),
-	new THREE.Vector3(0.020000000000000004, 0.276217782649107, 0),
-	new THREE.Vector3(-0.08, 0.276217782649107, 0),
-]
-let rr = [
-	new THREE.Vector3(0.22000000000000003, -0.24339745962155615, 0),
-	new THREE.Vector3(0.27, -0.15679491924311229, 0),
-	new THREE.Vector3(0.020000000000000004, 0.276217782649107, 0),
-	new THREE.Vector3(-0.18, -0.07019237886466842, 0),
-	new THREE.Vector3(-0.08, -0.07019237886466842, 0),
-	new THREE.Vector3(0.020000000000000004, 0.10301270189221931, 0),
-]
+const texture1 = new THREE.TextureLoader().load( 'img/2.jpg' );
+texture1.offset = new THREE.Vector2(0.506350550381033,0.506350550381033)
+let textureMat1 = new THREE.MeshBasicMaterial( { map: texture1 } );
 
 const greenMat = new THREE.MeshBasicMaterial({color: 0x00ff00,side: THREE.DoubleSide,});
 const blueMat = new THREE.MeshBasicMaterial({color: 0x0000ff,side: THREE.DoubleSide,});
 const redMat = new THREE.MeshBasicMaterial({color: 0xff0000,side: THREE.DoubleSide,});
 
-var geomShape1 = new THREE.ShapeBufferGeometry(new THREE.Shape(gg));
-let ggPenrose = addMesh(geomShape1,  textureMat);
-var geomShape2 = new THREE.ShapeBufferGeometry(new THREE.Shape(bb));
-let bbPenrose = addMesh(geomShape2,  blueMat);
-var geomShape3 = new THREE.ShapeBufferGeometry(new THREE.Shape(rr));
-let rrPenrose = addMesh(geomShape3,  redMat);
+
+const texture11 = new THREE.TextureLoader().load( 'img/2.jpg' );
+texture11.offset = new THREE.Vector2(0.506350550381033,0.506350550381033)
+let textureMat11 = new THREE.MeshBasicMaterial( { map: texture11 } );
+let geomShape1 = new THREE.ShapeBufferGeometry(new THREE.Shape(gg));
+// let ggPenrose = addMesh(geomShape1,  greenMat);
+let ggPenrose = addMesh(geomShape1,  textureMat11);
+
+const texture22 = new THREE.TextureLoader().load( 'img/2.jpg' );
+texture22.offset = new THREE.Vector2(0.506350550381033,0.506350550381033)
+let textureMat22 = new THREE.MeshBasicMaterial( { map: texture22 } );
+let geomShape2 = new THREE.ShapeBufferGeometry(new THREE.Shape(bb));
+// let bbPenrose = addMesh(geomShape2,  blueMat);
+let bbPenrose = addMesh(geomShape2,  textureMat22);
+
+
+const texture33 = new THREE.TextureLoader().load( 'img/2.jpg' );
+texture33.offset = new THREE.Vector2(0.506350550381033,0.506350550381033)
+let textureMat33 = new THREE.MeshBasicMaterial( { map: texture33 } );
+let geomShape3 = new THREE.ShapeBufferGeometry(new THREE.Shape(rr));
+// let rrPenrose = addMesh(geomShape3,  redMat);
+let rrPenrose = addMesh(geomShape3,  textureMat33);
+
+
+rrPenrose.position.x += -0.07
+rrPenrose.position.y += 0.05
+rrPenrose.rotation.z = 120 * 0.00872665;
+
+bbPenrose.rotation.z = 360 * 0.00872665;
+bbPenrose.position.x += - 0.081;
+bbPenrose.position.y += - 0.037;
+
+ggPenrose.rotation.z = - 120 * 0.00872665;
+
+// create threejs group
+const group = new THREE.Group();
+group.add(rrPenrose);
+group.add(bbPenrose);
+group.add(ggPenrose);
+
+scene.add(group);
+
+// scale object
+const scale = 1.5;
+group.scale.set(scale, scale, scale);
 
 
 function animation( time ) {
 
-	ggPenrose.rotation.z = time / 10000;
-  bbPenrose.rotation.z = time / 10000;
-  rrPenrose.rotation.z = time / 10000;
+	texture11.offset.x += Math.cos(time/1000)/500
+	texture22.offset.y += Math.cos(time/1000)/500
+	texture33.offset.x -= Math.cos(time/1000)/500
+
+	group.rotation.z =  time/1000;
+  group.position.z = Math.cos(time/1000)/5 + 0.2
 
 	renderer.render( scene, camera );
 
