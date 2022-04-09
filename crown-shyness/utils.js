@@ -1,4 +1,4 @@
-function getRandomColor() {
+export function getRandomColor() {
   var letters = '0123456789ABCDEF';
   var color = '#';
   for (var i = 0; i < 6; i++) {
@@ -7,18 +7,19 @@ function getRandomColor() {
   return color;
 }
 
-function getPoints (width, height, cnt, radius=40) {
+export function getPoints (width, height, cnt, radius=40) {
   // based on: https://www.youtube.com/watch?v=XATr_jdh-44&ab_channel=TheCodingTrain
   let circles = [];
   let points = [];
+  let colors = [];
   let areas = [];
   let maxNumberOfIterations = 10000;
   let iterations = 0;
   let min_tree_size = 300;
-  let tree_size = W < H ? W : H;
+  let tree_size = width < height ? width : height;
   tree_size = min_tree_size < tree_size ? min_tree_size : tree_size;
-  let areasX = Math.floor(W / tree_size);
-  let areasY = Math.floor(H / tree_size);
+  let areasX = Math.floor(width / tree_size);
+  let areasY = Math.floor(height / tree_size);
   let winX = width / areasX;
   let winY = height / areasY;
   let areaCnt = areasX * areasY;
@@ -64,5 +65,5 @@ function getPoints (width, height, cnt, radius=40) {
   for(let i = 0; i < areaCnt; i++) 
     colors.push(getRandomColor())
 
-  return  {areas, points, colors };
+  return  {areas, points, colors, areaCnt};
 }
