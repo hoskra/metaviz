@@ -59,21 +59,17 @@ function setup() {
 
 function draw() {
   f += 0.01
-  background(152, 229, 245)
-
+  stroke(152, 229, 245)
+  background(0, 125, 30)
   
-  strokeWeight(0)
-  stroke(0)
-  forest.drawTrees();
-  strokeWeight(10)
   forest.createEnvelopes();
-  strokeWeight(10)
-
+  
+  noFill()
+  strokeWeight(15)
   forest.drawEnvelopes()
-  forest.trees[4].drawEnvelope()
-
-
-
+  
+  strokeWeight(1)
+  forest.drawTrees(false);
 }
 
 window.setup = setup;
