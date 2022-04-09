@@ -6,10 +6,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="description" content="canvas">
   <meta name="author" content="hoskra">
-  <script src="../libs/p5.min.js" type="text/javascript" defer></script>
-  <script src="../libs/d3.v3.min.js" type="text/javascript" defer></script>
-  <script src="../libs/d3-delaunay@6.js" type="text/javascript" defer></script>
-  <script src="utils.js" type="text/javascript" defer></script>
   <title>Crown shyness</title>
   <style>
     * {overflow: hidden;}
@@ -22,7 +18,13 @@
 <body>
 
 </body>
-<script>
+<script type="module">
+
+import p5 from 'p5';
+import * as d3 from 'd3';
+import { Delaunay } from 'd3-delaunay';
+import { getPoints } from './utils';
+import { Forest, Tree } from './forest';
 
 // config variables
 let cnt = 400;  // more than cca 400 has no effect
@@ -54,7 +56,7 @@ function draw() {
 
   strokeWeight(10)
   
-  for(i=0;i<points.length;i++) {
+  for(let i = 0; i < points.length; i++) {
     
     let c1 = points[i][0]
     let c2 = points[i][1]
@@ -73,6 +75,9 @@ function draw() {
 
   }
 }
+
+window.setup = setup;
+window.draw = draw;
 
 </script>
 </html>
