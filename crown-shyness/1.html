@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="canvas">
+  <meta name="author" content="hoskra">
+  <script src="../libs/p5.min.js" type="text/javascript" defer></script>
+  <script src="../libs/d3.v3.min.js" type="text/javascript" defer></script>
+  <script src="../libs/d3-delaunay@6.js" type="text/javascript" defer></script>
+  <script src="utils.js" type="text/javascript" defer></script>
+  <title>Crown shyness</title>
+  <style>
+    * {overflow: hidden;}
+    body {
+      margin: 0;
+      font-family: 'Courier New', Courier, monospace;
+    }
+  </style>
+</head>
+<body>
+
+</body>
+<script>
+
+// config variables
+let cnt = 400;  // more than cca 400 has no effect
+let maxMinPointDistance = 30;
+
+// help variables
+let W = window.innerWidth;
+let H = window.innerHeight;
+
+let f = 0;
+let colors = [];
+let points = []
+let areas = []
+
+function setup() {
+  let canvas = createCanvas(W, H)
+  const val = getPoints(W, H, cnt, maxMinPointDistance)
+  points = val.points
+  areas = val.areas
+  colors = val.colors
+  noLoop()
+}
+
+function draw() {
+  f += 0.01
+  background(152, 229, 245)
+  const delaunay = d3.Delaunay.from(points);
+  const voronoi = delaunay.voronoi([0, 0, W, H])
+
+  strokeWeight(10)
+  
+  for(i=0;i<points.length;i++) {
+    
+    let c1 = points[i][0]
+    let c2 = points[i][1]
+    
+    stroke(152, 229, 245)
+    fill(colors[areas[i]])
+
+    beginShape();
+    for (let vt of voronoi.cellPolygon(i)) {
+      vertex(vt[0], vt[1]);
+    }
+    endShape(CLOSE);
+    
+    stroke(36, 18, 10);
+    circle(c1, c2, 1)
+
+  }
+}
+
+</script>
+</html>
