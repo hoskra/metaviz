@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="canvas">
+  <meta name="author" content="hoskra">
+  <title>Crown shyness</title>
+  <style>
+    * {overflow: hidden;}
+    body {
+      margin: 0;
+      font-family: 'Courier New', Courier, monospace;
+    }
+  </style>
+</head>
+<body>
+
+</body>
+<script type="module">
+
+import p5 from 'p5';
+import * as d3 from 'd3';
+import { Delaunay } from 'd3-delaunay';
+import { getPoints } from './utils';
+import { Forest, Tree } from './forest';
+
+// config variables
+let cnt = 400;  // more than cca 400 has no effect
+let maxMinPointDistance = 30;
+
+// help variables
+let W = window.innerWidth;
+let H = window.innerHeight;
+
+let f = 0;
+let colors = [];
+let points = []
+let areas = []
+let forest;
+
+function setup() {
+  let canvas = createCanvas(W, H)
+  const val = getPoints(W, H, cnt, maxMinPointDistance)
+  points = val.points
+  areas = val.areas
+  colors = val.colors
+  let areaCnt = val.areaCnt
+
+  let offset = 10;
+  const delaunay = d3.Delaunay.from(points);
+  const voronoi = delaunay.voronoi([-offset, -offset, W+offset, H+offset])
+
+  forest = new Forest(points, areas, areaCnt, voronoi);
+  
+  noLoop()
+}
+
+function draw() {
+  f += 0.01
+  stroke(152, 229, 245)
+  background(0, 125, 30)
+  
+  forest.createEnvelopes();
+  
+  noFill()
+  strokeWeight(15)
+  forest.drawEnvelopes()
+  
+  strokeWeight(1)
+  forest.drawTrees(false);
+}
+
+window.setup = setup;
+window.draw = draw;
+
+</script>
+</html>
