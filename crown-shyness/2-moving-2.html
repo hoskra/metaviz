@@ -39,13 +39,14 @@ let forest;
 function setup() {
   let canvas = createCanvas(W, H)
   forest = new Forest(W, H, cnt, maxMinPointDistance);
-  // forest.curveToggle();
+  forest.curveToggle();
   // noLoop()
 }
 
 function draw() {
   f += 0.01
-  // forest.move(f);
+  
+  forest.move(f);
   // forest.moveAndRegenerate(f);
   forest.drawAll();
 }

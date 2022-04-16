@@ -65,5 +65,17 @@ export function getPoints (width, height, cnt, radius=40) {
   for(let i = 0; i < areaCnt; i++) 
     colors.push(getRandomColor())
 
-  return  {areas, points, colors, areaCnt};
+  return  {areas, points, colors, areaCnt, winX, winY, areasX, areasY};
+}
+
+export function isWithinAreaBounds(x, y, winX, winY, areasX, areasY, areaIndex) {
+  let xMax = areaIndex % areasX;
+  let xMin = xMin * winX;
+  xMax += winX;
+  if( x > xMin && x < xMax) return false;
+  let yMax = Math.floor(areaIndex / areasY);
+  let yMin = yMin * winY;
+  yMax += winY;
+
+  return y > yMin && y < yMax;
 }
