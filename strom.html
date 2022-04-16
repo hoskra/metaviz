@@ -1,0 +1,190 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="canvas">
+  <meta name="author" content="hoskra">
+  <!-- <script src="libs/three.js" defer></script> -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r83/three.js"></script>
+  <title>Spiral</title>
+  <style>
+    body {
+      margin: 0;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="stage"></div>
+</body>
+<script type="module">
+
+  // Find the latest version by visiting https://cdn.skypack.dev/three.
+
+  import * as THREE from 'https://cdn.skypack.dev/pin/three@v0.137.5-HJEdoVYPhjkiJWkt6XIa/mode=imports/optimized/three.js';
+
+let camera, scene, renderer;
+let geometry, material, mesh;
+
+let toRotate = [];
+
+function addMesh(x,y,z,w) {
+  let color = new THREE.Color(0xffffff);
+  color.setHSL(1/w, 1, 0.5);
+  let box = new THREE.Mesh(new THREE.BoxGeometry(0.1,0.1,0.1), new THREE.MeshBasicMaterial({color}));
+  box.position.set(x,-y,z);
+  // box.scale.set(1.0,0.4*w,1.0);
+  scene.add(box);
+  toRotate.push(box);
+}
+
+let object = new THREE.Object3D();
+
+
+
+
+function makeLine(p1, p2, w) {
+  const points = [];
+  points.push( new THREE.Vector3( p1.x, -p1.y, p1.z ) );
+  points.push( new THREE.Vector3( p2.x, -p2.y, p2.z ) );
+  // const geometry = new THREE.BufferGeometry(points).setFromPoints( points );
+  let geometry = new THREE.ExtrudeBufferGeometry(new THREE.Shape(points), {
+    steps: 1,
+    depth: 0.1,
+    bevelEnabled: false,
+  });
+
+
+  let color = new THREE.Color(0xffffff);
+  color.setHSL(1/w, 1, 0.5);
+  let material = new THREE.LineBasicMaterial({color, linewidth: 10});
+  let line = new THREE.Mesh(geometry, material);
+
+  // line.position.set(p1.x, -p1.y, p1.z);
+  toRotate.push(line);
+  scene.add(line);
+}
+
+function makeLine2(p1, p2, m, w) {
+  const points = [];
+  points.push( new THREE.Vector3( p1.x, -p1.y, p1.z ) );
+  points.push( new THREE.Vector3( m.x, -m.y, m.z ) );
+  points.push( new THREE.Vector3( p2.x, -p2.y, p2.z ) );
+  // const geometry = new THREE.BufferGeometry(points).setFromPoints( points );
+  let geometry = new THREE.ExtrudeBufferGeometry(new THREE.Shape(points), {
+    steps: 1,
+    depth: 0.1,
+    bevelEnabled: false,
+  });
+
+
+  let color = new THREE.Color(0xffffff);
+  color.setHSL(1/w, 1, 0.5);
+  let material = new THREE.LineBasicMaterial({color, linewidth: 10});
+  let line = new THREE.Mesh(geometry, material);
+
+  // line.position.set(p1.x, -p1.y, p1.z);
+  toRotate.push(line);
+  scene.add(line);
+}
+
+function doMid(p1, p2, w, last = false) {
+  let m = {x: (p1.x + p2.x) / 2, y: (p1.y + p2.y), z: (p1.z + p2.z) / 2};
+  makeLine2(p1, p2, m, w);
+  
+  // addMesh(m.x, m.y, m.z, w);
+  // makeLine(p1, p2, w);
+  // if(!last) makeLine(p2, m, w);
+  return m
+}
+
+function generateLayer(p, depth) {
+  let cnt = p.length
+  if(cnt < 2) return
+  if(cnt == 2) {
+    let m = doMid(p[0], p[1], depth + 1, true)
+    return
+  }
+  let points = []
+  for(let i=0; i<cnt-1; i+=2) {
+    let m = doMid(p[i], p[i+1], depth + 1)
+    points.push(m)
+  }
+  if(cnt%2==1) points.push({x: p[cnt-1].x, y: p[cnt-1].y, z: p[cnt-1].z})
+  generateLayer(points, depth + 1)
+}
+
+  let points = [
+    {x: -0.3, y: 0.1, z: 0.1},
+    {x: -0.2, y: 0.1, z: -0.2},
+    {x: -0.1, y: 0.1, z: -0.3},
+    {x: 0.1, y: 0.1, z: -0.2},
+    {x: 0.2, y: 0.1, z: 0.1},
+    {x: 0.3, y: 0.1, z: 0.2},
+    {x: 0.2, y: 0.1, z: 0.3},
+    {x: 0.1, y: 0.1, z: 0.2},
+    {x: -0.1, y: 0.1, z: 0.3},
+  ]
+
+
+let a;
+
+init();
+
+function init() {
+
+	camera = new THREE.PerspectiveCamera( 70, window.innerWidth / window.innerHeight, 0.01, 10 );
+	camera.position.z = 3;
+
+  // camera = new THREE.PerspectiveCamera( 100, window.innerWidth / window.innerHeight, 0.1, 100 );
+  camera.position.set(0, 0, 0);
+  camera.lookAt(new THREE.Vector3(0,1,0))
+
+  scene = new THREE.Scene();
+
+	geometry = new THREE.BoxGeometry( 0.2, 0.2, 0.2 );
+	material = new THREE.MeshNormalMaterial();
+
+	mesh = new THREE.Mesh( geometry, material );
+
+	renderer = new THREE.WebGLRenderer( { antialias: true } );
+	renderer.setSize( window.innerWidth, window.innerHeight );
+	renderer.setAnimationLoop( animation );
+	document.body.appendChild( renderer.domElement );
+
+  for(let i=0; i<points.length; i++) {
+    addMesh(points[i].x, points[i].y, points[i].z, points.length)
+  }
+
+
+  generateLayer(points, 1)
+}
+
+console.log(toRotate.length)
+
+function animation( time ) {
+
+	// mesh.rotation.x = time / 2000;
+	// mesh.rotation.y = time / 1000;
+	// a.rotation.x = time / 2000;
+
+  toRotate.forEach(m => {
+    // m.rotation.y += 0.01;
+    // m.position.x += Math.sin(time/1000) * m.position.y;
+
+  })
+
+  camera.position.x = Math.sin(time/1000) * 2;
+  camera.position.y = Math.cos(time/1000) * 2;
+  camera.position.z = Math.cos(time/1000) * 2;
+
+  camera.lookAt(new THREE.Vector3(0,Math.cos(time/1000),0))
+
+	renderer.render( scene, camera );
+
+}
+
+</script>
+</html>
