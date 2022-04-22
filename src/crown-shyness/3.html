@@ -21,98 +21,60 @@
 <script type="module">
 
 import p5 from 'p5';
+import * as d3 from 'd3';
+import { Delaunay } from 'd3-delaunay';
+import { getPoints } from './utils';
+import { Forest, Tree } from './forest';
 
+
+// config variables
+let cnt = 400;  // more than cca 400 has no effect
+let maxMinPointDistance = 30;
+
+// help variables
 let W = window.innerWidth;
 let H = window.innerHeight;
-let points = [];
-let cnt = 8;
+
+let f = 0;
+let colors = [];
+let points = []
+let areas = []
 
 function setup() {
   let canvas = createCanvas(W, H)
-  
-  for(let i = 0; i < cnt; i++) {
-    points.push([random(W*0.7, W*1.0), random(H*0.3, H*0.6)])
-  }
-  
+  const val = getPoints(W, H, cnt, maxMinPointDistance)
+  points = val.points
+  areas = val.areas
+  colors = val.colors
   noLoop()
 }
 
-let base = [W/4, H/2]
-let center = [W/4,0]
-
-
-function randomStep(f, t) {
-  let a = createVector(f[0] -t[0], f[1] -t[1])
-  let dir = a.normalize()
-  let speed = -100;
-  let out = [dir.x * speed, dir.x * speed]
-  return out
-}
-
-function randomLine(from, to) {
-  let previous = from;
-  for(let i = 0; i < 60; i++) {
-    
-    let step = randomStep(previous, to)
-    
-    // line(previous[0], previous[1], step[0], step[1])
-    
-    previous = step;
-    
-    // console.log(step)
-    
-    let d = dist(step[0], step[1], to[0], to[1]);
-    
-    circle(previous[0],previous[1], d/30)
-    
-    if(i % 2 == 0) {
-      let alt = [random(-W/2, W/2), random(H/2, 0)];
-      for(let j = 0; j < 2; j++) {
-        
-        // line(previous[0], previous[1], step[0], step[1])
-        // step = randomStep(step, alt)
-        // previous = step;
-        // circle(previous[0],previous[1], d/30)
-        // line(from[0], from[1], step[0], step[1])
-
-      }
-    }
-      // if( i % 3 == 0) {
-        //   let alt2 = [random(-W/2, W/2), random(H/2, 0)];
-      //   for(let j = 0; j < 2; j++) {
-      //     step = randomStep(from, alt2)
-      //     // circle(step[0],step[1], d/30)
-      //   }
-      // }
-    // }
-    if(dist(from[0], from[1], to[0], to[1]) < 5) {
-      break
-    }
-  }
-  return from
-}
-
 function draw() {
-  // points.forEach(p => {
-    //   circle(p[0], p[1], 10)
-    // })
-  push()
-  translate(W/2, H/2)
-    
-  // noStroke()
-  fill(0)
-  strokeWeight(4)
-  randomLine([W/2, W/2], center)
-  // fill(255, 0, 0)
-  // randomLine([0,-W/2], center)
-  // fill(0, 0, 255)
-  // randomLine([-W/2,-W/2], center)
-  // fill(0, 255, 0)
-  // randomLine([W/2,0], center)
-  // fill(0, 255, 0)
-  // randomLine([0,W/2], center)
+  f += 0.01
+  background(152, 229, 245)
+  const delaunay = d3.Delaunay.from(points);
+  const voronoi = delaunay.voronoi([0, 0, W, H])
 
-  pop()
+  strokeWeight(10)
+  
+  for(let i = 0; i < points.length; i++) {
+    
+    let c1 = points[i][0]
+    let c2 = points[i][1]
+
+    stroke(152, 229, 245)
+    fill(colors[areas[i]])
+
+    beginShape();
+    for (let vt of voronoi.cellPolygon(i)) {
+      vertex(vt[0], vt[1]);
+    }
+    endShape(CLOSE);
+
+    stroke(36, 18, 10);
+    circle(c1, c2, 1)
+
+  }
 }
 
 window.setup = setup;

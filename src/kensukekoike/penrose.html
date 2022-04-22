@@ -8,18 +8,17 @@
   <meta name="author" content="hoskra">
   <script src="../libs/three.js" defer></script>
 	<script src="../util/penroseUtils.js" defer></script>
-	<!-- <script src="libs/dat.gui.min.js" defer></script> -->
-  <!-- <script src="libs/csg-lib.js" defer></script>
-  <script src="libs/three-csg.js" defer></script>
-  <script src="libs/csg-worker.js" defer></script> -->
   <title>Penrose</title>
-  <style> body { margin: 0; } </style>
+  <style>
+    body { margin: 0; }
+  </style>
 </head>
 
 <script type="module">
 
 const camera = new THREE.PerspectiveCamera( 100, window.innerWidth / window.innerHeight, 0.01, 20 );
 camera.position.z = 1;
+let mouse = {x:0, y:0};
 
 const imgName = '../img/2.jpg';
 
@@ -97,18 +96,48 @@ scene.add(group);
 const scale = 1.5;
 group.scale.set(scale, scale, scale);
 
+group.position.x += 0.1;
 
+console.log(texture11.offset.x)
+console.log(texture22.offset.y)
+console.log(texture33.offset.x)
+0.506350550381033
+0.506350550381033
+0.506350550381033
 function animation( time ) {
 
-	texture11.offset.x += Math.cos(time/1000)/500
-	texture22.offset.y += Math.cos(time/1000)/500
-	texture33.offset.x -= Math.cos(time/1000)/500
+	texture11.offset.x += 0;
+	texture22.offset.y += 0;
+	texture33.offset.x -= 0;
+	// texture11.offset.x += Math.cos(time/1000)/500
+	// texture22.offset.y += Math.cos(time/1000)/500
+	// texture33.offset.x -= Math.cos(time/1000)/500
 
-	group.rotation.z =  time/1000;
-  group.position.z = Math.cos(time/1000)/5 + 0.2
+	// group.rotation.z =  time/1000;
+  // group.position.z = Math.cos(time/1000)/5 + 0.2
 
 	renderer.render( scene, camera );
 
+}
+
+document.addEventListener('mousemove', onDocumentMouseMove, false);
+
+function onDocumentMouseMove(event) {
+  event.preventDefault();
+  mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+  mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+
+  texture11.offset.x = 0.506350550381033 + Math.cos(mouse.x-mouse.y/2) * 0.2;
+	texture22.offset.y = 0.506350550381033 + Math.cos(mouse.y+mouse.x/2)* 0.2;
+	texture33.offset.x = 0.506350550381033 - Math.cos(mouse.x+mouse.y/2)* 0.2;
+}
+
+window.addEventListener( 'resize', onWindowResize, false );
+
+function onWindowResize(){
+  camera.aspect = window.innerWidth / window.innerHeight;
+  camera.updateProjectionMatrix();
+  renderer.setSize( window.innerWidth, window.innerHeight );
 }
 
 </script>

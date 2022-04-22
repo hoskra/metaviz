@@ -2,9 +2,7 @@
 import { getRandomColor } from "../utils";
 import PolyBool from "polybooljs";
 import * as d3 from 'd3';
-import { Delaunay } from 'd3-delaunay';
 
-// ?? polybooljs.v1.2.0.js:784 Uncaught (in promise) Error: PolyBool: Zero-length segment detected; your epsilon is probably too small or too large
 export class Forest {
   constructor(width, height, cnt) {
     this.getPoints(width, height, cnt, 80);
@@ -35,7 +33,7 @@ export class Forest {
     }
     this.createEnvelopes();
   }
-  moveAndRegenerate(f) {
+  moveAndRegenerate() {
     for (let i = 0; i < this.points.length; i++) {
       let x = this.points[i][0];
       let y = this.points[i][1];
@@ -173,6 +171,7 @@ export class Forest {
       }
     }
     this.areaCoordinates = [];
+
     for (let i=0; i<this.areaCnt; i++) {
       let x = i % this.areasX;
       let y = Math.floor(i / this.areasX);
@@ -180,6 +179,11 @@ export class Forest {
       let yMin = y * this.winY;
       let xMax = xMin + this.winX;
       let yMax = yMin + this.winY;
+
+      if(x == 0) xMin -= this.winX /2;
+      if(y == 0) yMin -= this.winY /2;
+      if(x == this.areasX-1) xMax += this.winX /2;
+      if(y == this.areasY-1) yMax += this.winY /2;
 
       this.areaCoordinates.push({xMin, yMin, xMax, yMax});
     }
@@ -242,7 +246,7 @@ export class Tree {
     rotateX(3*PI/2);
 
     strokeWeight(10);
-    stroke(0)
+    stroke(36, 18, 10);
     beginShape();
     vertex(0, 0, 0);
     translate(a, b, 0);

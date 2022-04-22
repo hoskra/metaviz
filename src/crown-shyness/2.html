@@ -6,53 +6,166 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="description" content="canvas">
   <meta name="author" content="hoskra">
-  <title>Crown shyness</title>
+  <script src="../libs/p5.min.js" type="text/javascript" defer></script>
+  <script src="../libs/d3.v3.min.js" type="text/javascript" defer></script>
+  <script src="../libs/d3-delaunay@6.js" type="text/javascript" defer></script>
+  <title>Spiral</title>
   <style>
-    * {overflow: hidden;}
     body {
       margin: 0;
-      font-family: 'Courier New', Courier, monospace;
+    }
+    main {
+      display:flex;
+      height: 100vh;
+      width: 100vw;
+    }
+    canvas {
+      display: block;
+      margin: auto;
     }
   </style>
 </head>
+
 <body>
-
 </body>
-<script type="module">
+<script>
+// https://softwareengineering.stackexchange.com/questions/181285/randomly-generate-points-in-a-spiral-motion-using-javascript/181291
+// LSystems by Daniel Shiffman
+// https://editor.p5js.org/codingtrain/sketches/QmTx-Y_UP
 
-import p5 from 'p5';
-import * as d3 from 'd3';
-import { Delaunay } from 'd3-delaunay';
-import { getPoints } from './utils';
-import { Forest, Tree } from './forest';
-
-
-// config variables
-let cnt = 400;  // more than cca 400 has no effect
-let maxMinPointDistance = 30;
-
-// help variables
-let W = window.innerWidth;
-let H = window.innerHeight;
 let f = 0;
-let forest;
+let W = 700;
+let size = W/4;
+let p=[];
+let dir = []
+let offset = 100
+
+let polygonPoints = [];
+let tree_coords = [];
+
+function rr(min, max) { return Math.random() * (max - min) + min; }
+function ran(set) { return set[Math.floor(Math.random() * set.length)] }
 
 function setup() {
-  let canvas = createCanvas(W, H)
-  forest = new Forest(W, H, cnt, maxMinPointDistance);
-  // forest.curveToggle();
   // noLoop()
+  createCanvas(W, W)
+
+  // generate points
+  for(i=size;i<W;i+=size)
+    for(j=size;j<W;j+=size)
+      p.push([i, j])
+
+  // randomize
+  for(point in p) {
+    p[point][0] += rr(-size/2, size/2)
+    p[point][1] += rr(-size/2, size/2)
+  }
+
+
+  for(i=0;i<p.length;i++) {
+    let xLeft = rr(-100, -50);
+    let xRight = rr(W + 50, W + 100);
+    let yUp = rr(-100, -50);
+    let yDown = rr(W + 50, W + 100);
+
+    if(p[i][0] < W/2) {
+      if(p[i][1] < W/2) {
+        tree_coords.push([xLeft, yUp])
+      } else {
+        tree_coords.push([xLeft, yDown])
+      }
+    } else {
+      if(p[i][1] < W/2) {
+        tree_coords.push([xRight, yUp])
+      } else {
+        tree_coords.push([xRight, yDown])
+      }
+    }
+  }
 }
+
+function middlePoint(x1,y1,x2,y2) { return [x1+(x2-x1)*0.8, y1+(y2-y1)*0.8] }
+function m(x1,y1,x2,y2) { return [x1+(x2-x1)*0.4, y1+(y2-y1)*0.4] }
 
 function draw() {
+  // push()
+  // translate(-W/2, -W/2)
   f += 0.01
-  // forest.move(f);
-  // forest.moveAndRegenerate(f);
-  forest.drawAll();
-}
+  background(152, 229, 245)
+  // for(i=0;i<p.length;i++) {
+  //   p[i][0] += rr(-1/4, 1/4)
+  //   p[i][1] += rr(-1/4, 1/4)
+  // }
 
-window.setup = setup;
-window.draw = draw;
+  noFill();
+  stroke(80,100,225)
+  strokeWeight(5)
+  size=100
+  radius=size*2
+
+  const delaunay = d3.Delaunay.from(p);
+  const voronoi = delaunay.voronoi([0, 0, W, W])
+  polygonPoints = []
+  stroke(152, 229, 245)
+  strokeWeight(9)
+
+  for(i=0;i<p.length;i++) {
+    // fill(map(i,0,p.length,0,255),100,100)
+    fill(0)
+    noFill()
+    noStroke()
+    // beginShape();
+    c1=p[i][0]
+    c2=p[i][1]
+    poin=[]
+    for (let vt of voronoi.cellPolygon(i)) {
+      // vertex(vt[0], vt[1]);
+      poin.push(middlePoint(c1,c2,vt[0],vt[1])[0], middlePoint(c1,c2,vt[0],vt[1])[1])
+      circle(m(c1,c2,vt[0],vt[1])[0], m(c1,c2,vt[0],vt[1])[1], 50)
+    }
+    polygonPoints.push(poin)
+    // endShape(CLOSE);
+    circle(c1, c2, 1)
+  }
+
+
+  for(i=0;i<polygonPoints.length;i++) {
+    fill(100,map(i,0,p.length,140,255),100)
+
+    beginShape();
+    for(j=0;j<polygonPoints[i].length;j+=2) {
+      vertex(polygonPoints[i][j], polygonPoints[i][j+1])
+      // line(polygonPoints[i][j], polygonPoints[i][j+1], polygonPoints[i][j+2], polygonPoints[i][j+3])
+    }
+    endShape(CLOSE);
+    fill(0)
+    circle(p[i][0], p[i][1], 5)
+  }
+
+  fill(255,0,0)
+  noStroke()
+  strokeWeight(1)
+  for (let i = 0; i < p.length; i++) {
+    p[i][0] += 0.7*cos(f)*noise(f)
+    p[i][1] += 0.7*sin(f)*noise(f)
+  }
+
+  strokeWeight(5)
+  stroke(36, 18, 10);
+
+  for(i=0;i<p.length;i++) {
+    for (let vt of voronoi.cellPolygon(i)) {
+      x1 = m(p[i][0],p[i][1],vt[0],vt[1])[0]
+      x2 = m(p[i][0],p[i][1],vt[0],vt[1])[1]
+      line(x1, x2, p[i][0], p[i][1])
+    }
+
+    line(tree_coords[i][0], tree_coords[i][1], p[i][0], p[i][1])
+
+  }
+
+  // pop()
+}
 
 </script>
 </html>
