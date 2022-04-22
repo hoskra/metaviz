@@ -6,8 +6,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="description" content="canvas">
   <meta name="author" content="hoskra">
-  <script src="libs/three.js" defer></script>
-	<script src="util/penroseUtils.js" defer></script>
+  <script src="../libs/three.js" defer></script>
+	<script src="../util/penroseUtils.js" defer></script>
 	<!-- <script src="libs/dat.gui.min.js" defer></script> -->
   <!-- <script src="libs/csg-lib.js" defer></script>
   <script src="libs/three-csg.js" defer></script>
@@ -20,6 +20,8 @@
 
 const camera = new THREE.PerspectiveCamera( 100, window.innerWidth / window.innerHeight, 0.01, 20 );
 camera.position.z = 1;
+
+const imgName = '../img/2.jpg';
 
 function addMesh(geometry, material) {
   const mesh = new THREE.Mesh(geometry, material);
@@ -34,14 +36,14 @@ renderer.setAnimationLoop( animation );
 document.body.appendChild( renderer.domElement );
 
 const geometry = new THREE.BoxGeometry(2,2,1 );
-const texture = new THREE.TextureLoader().load( 'img/2.jpg' );
+const texture = new THREE.TextureLoader().load( imgName );
 let textureMat = new THREE.MeshBasicMaterial( { map: texture } );
 
 let a = addMesh(geometry, textureMat);
 a.position.z = -0.5;
 
 
-const texture1 = new THREE.TextureLoader().load( 'img/2.jpg' );
+const texture1 = new THREE.TextureLoader().load( imgName );
 texture1.offset = new THREE.Vector2(0.506350550381033,0.506350550381033)
 let textureMat1 = new THREE.MeshBasicMaterial( { map: texture1 } );
 
@@ -50,14 +52,14 @@ const blueMat = new THREE.MeshBasicMaterial({color: 0x0000ff,side: THREE.DoubleS
 const redMat = new THREE.MeshBasicMaterial({color: 0xff0000,side: THREE.DoubleSide,});
 
 
-const texture11 = new THREE.TextureLoader().load( 'img/2.jpg' );
+const texture11 = new THREE.TextureLoader().load( imgName );
 texture11.offset = new THREE.Vector2(0.506350550381033,0.506350550381033)
 let textureMat11 = new THREE.MeshBasicMaterial( { map: texture11 } );
 let geomShape1 = new THREE.ShapeBufferGeometry(new THREE.Shape(gg));
 // let ggPenrose = addMesh(geomShape1,  greenMat);
 let ggPenrose = addMesh(geomShape1,  textureMat11);
 
-const texture22 = new THREE.TextureLoader().load( 'img/2.jpg' );
+const texture22 = new THREE.TextureLoader().load( imgName );
 texture22.offset = new THREE.Vector2(0.506350550381033,0.506350550381033)
 let textureMat22 = new THREE.MeshBasicMaterial( { map: texture22 } );
 let geomShape2 = new THREE.ShapeBufferGeometry(new THREE.Shape(bb));
@@ -65,7 +67,7 @@ let geomShape2 = new THREE.ShapeBufferGeometry(new THREE.Shape(bb));
 let bbPenrose = addMesh(geomShape2,  textureMat22);
 
 
-const texture33 = new THREE.TextureLoader().load( 'img/2.jpg' );
+const texture33 = new THREE.TextureLoader().load( imgName );
 texture33.offset = new THREE.Vector2(0.506350550381033,0.506350550381033)
 let textureMat33 = new THREE.MeshBasicMaterial( { map: texture33 } );
 let geomShape3 = new THREE.ShapeBufferGeometry(new THREE.Shape(rr));

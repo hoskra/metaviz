@@ -6,8 +6,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="description" content="canvas">
   <meta name="author" content="hoskra">
-  <script src="libs/p5.min.js" type="text/javascript" defer></script>
-  <script src="libs/d3-delaunay@6.js" type="text/javascript" defer></script>
+  <script src="../libs/p5.min.js" type="text/javascript" defer></script>
+  <script src="../libs/d3-delaunay@6.js" type="text/javascript" defer></script>
   <title>kensukekoike</title>
   <style>
     body {
@@ -26,7 +26,7 @@ let f = 0
 let images = []
 
 function preload() {
-  img = loadImage('img/2.jpg');
+  img = loadImage('../img/2.jpg');
 
   for(i=0; i<images.lenght; i++) {
     images.push(img.get());

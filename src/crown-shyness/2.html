@@ -26,6 +26,7 @@ import { Delaunay } from 'd3-delaunay';
 import { getPoints } from './utils';
 import { Forest, Tree } from './forest';
 
+
 // config variables
 let cnt = 400;  // more than cca 400 has no effect
 let maxMinPointDistance = 30;
@@ -45,9 +46,8 @@ function setup() {
 
 function draw() {
   f += 0.01
-  
   // forest.move(f);
-  forest.moveAndRegenerate(f);
+  // forest.moveAndRegenerate(f);
   forest.drawAll();
 }
 

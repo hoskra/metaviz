@@ -26,6 +26,7 @@ import { Delaunay } from 'd3-delaunay';
 import { getPoints } from './utils';
 import { Forest, Tree } from './forest';
 
+
 // config variables
 let cnt = 400;  // more than cca 400 has no effect
 let maxMinPointDistance = 30;
@@ -33,22 +34,47 @@ let maxMinPointDistance = 30;
 // help variables
 let W = window.innerWidth;
 let H = window.innerHeight;
+
 let f = 0;
-let forest;
+let colors = [];
+let points = []
+let areas = []
 
 function setup() {
   let canvas = createCanvas(W, H)
-  forest = new Forest(W, H, cnt, maxMinPointDistance);
-  forest.curveToggle();
-  // noLoop()
+  const val = getPoints(W, H, cnt, maxMinPointDistance)
+  points = val.points
+  areas = val.areas
+  colors = val.colors
+  noLoop()
 }
 
 function draw() {
   f += 0.01
+  background(152, 229, 245)
+  const delaunay = d3.Delaunay.from(points);
+  const voronoi = delaunay.voronoi([0, 0, W, H])
+
+  strokeWeight(10)
   
-  forest.move(f);
-  // forest.moveAndRegenerate(f);
-  forest.drawAll();
+  for(let i = 0; i < points.length; i++) {
+    
+    let c1 = points[i][0]
+    let c2 = points[i][1]
+
+    stroke(152, 229, 245)
+    fill(colors[areas[i]])
+
+    beginShape();
+    for (let vt of voronoi.cellPolygon(i)) {
+      vertex(vt[0], vt[1]);
+    }
+    endShape(CLOSE);
+
+    stroke(36, 18, 10);
+    circle(c1, c2, 1)
+
+  }
 }
 
 window.setup = setup;
