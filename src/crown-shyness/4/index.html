@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="canvas">
+  <meta name="author" content="hoskra">
+  <title>Crown shyness</title>
+  <style>
+    * {overflow: hidden;}
+    body {
+      margin: 0;
+      font-family: 'Courier New', Courier, monospace;
+    }
+  </style>
+</head>
+<body>
+
+</body>
+<script type="module">
+
+import p5 from 'p5';
+import { Forest } from './forest';
+import { Tree } from './tree';
+
+// config variables
+let cnt = 400;  // more than cca 400 has no effect
+let maxMinPointDistance = 30;
+
+// help variables
+let W = window.innerWidth;
+let H = window.innerHeight;
+let f = 0;
+let forest;
+
+function setup() {
+  let canvas = createCanvas(W, H)
+  forest = new Forest(W, H, cnt, maxMinPointDistance);
+  // noLoop()
+}
+
+function draw() {
+  f += 0.01
+  background(255);
+
+
+  forest.move(f);
+  // forest.moveAndRegenerate(f);
+  forest.drawAll();
+  // forest.trees[4].drawEnvelope();
+  // forest.trees[4].draw();
+  // forest.trees[4].drawBasicThrunk();
+
+}
+
+window.setup = setup;
+window.draw = draw;
+
+</script>
+</html>

@@ -1,39 +1,46 @@
 // import p5 from "p5";
-import { getRandomColor } from "./utils";
-import PolyBool from "polybooljs";
 import * as d3 from 'd3';
-import { Delaunay } from 'd3-delaunay';
+import { Tree } from './tree';
 
-// ?? polybooljs.v1.2.0.js:784 Uncaught (in promise) Error: PolyBool: Zero-length segment detected; your epsilon is probably too small or too large
 export class Forest {
   constructor(width, height, cnt, radius = 40) {
+    this.points = [];
+    this.trees = [];
+    this.areas = [];
+    this.areaCoordinates = [];
+    this.areasX;
+    this.areasY;
+    this.winX;
+    this.winY;
+    this.areaCnt; // tree count
+
+    // get random points that are not closer that defined radius
     this.getPoints(width, height, cnt, radius);
     this.generate();
-    this.curve = false;
   }
-  curveToggle() { this.curve = !this.curve; }
+
   generate() {
-    this.trees = [];
     let offset = 10;
     const delaunay = d3.Delaunay.from(this.points);
     const voronoi = delaunay.voronoi([-offset, -offset, width+offset, height+offset])
 
+    // initialize trees
     for(let i=0; i<this.areaCnt; i++) this.trees.push(new Tree());
 
+    // get coordinates of all polygons and save them to corresponding tree
     for (let i = 0; i < this.points.length; i++) {
       let index = this.areas[i];
-
-      let polygon = [];
+      let polygonCoordinates = [];
       for (let vt of voronoi.cellPolygon(i)) {
-        polygon.push([Math.floor(vt[0]), Math.floor(vt[1])]);
+        polygonCoordinates.push([parseInt(vt[0]), parseInt(vt[1])]);
       }
-
-      this.trees[index].points.push( this.points[i] );
-      this.trees[index].polygons.push( polygon );
+      console.log(polygonCoordinates)
+      this.trees[index].addPolygon(this.points[i], polygonCoordinates);
     }
 
     this.createEnvelopes();
   }
+
   moveAndRegenerate(f) {
     for (let i = 0; i < this.points.length; i++) {
       let x = this.points[i][0];
@@ -64,24 +71,24 @@ export class Forest {
     }
     this.generate();
   }
-  move(f) {
 
+  move(f) {
     this.trees.forEach(tree => {
-      tree.polygons.forEach(polygon => {
-        polygon.forEach((v,i) => {
+      tree.vertices.forEach((v,i) => {
           v[0] += 0.2*cos(f+i)*noise(f);
           v[1] += 0.2*sin(f)*noise(f+i);
-        });
       });
     });
 
   }
+
   drawAll() {
     stroke(152, 229, 245)
     background(0, 125, 30)
     strokeWeight(15)
+    noFill()
 
-    this.drawEnvelopes()
+    // this.drawEnvelopes()
 
     strokeWeight(1)
 
@@ -109,9 +116,8 @@ export class Forest {
   }
 
   drawEnvelopes() {
-    noFill()
     this.trees.forEach((tree, i) => {
-      tree.drawEnvelope(this.curve);
+      tree.drawEnvelope();
     });
   }
 
@@ -124,8 +130,6 @@ export class Forest {
   getPoints (width, height, cnt, radius) {
     // based on: https://www.youtube.com/watch?v=XATr_jdh-44&ab_channel=TheCodingTrain
     let circles = [];
-    this.points = [];
-    this.areas = [];
     let maxNumberOfIterations = 10000;
     let iterations = 0;
     let min_tree_size = 300;
@@ -168,7 +172,6 @@ export class Forest {
         this.areas.push(x+y);
       }
     }
-    this.areaCoordinates = [];
     for (let i=0; i<this.areaCnt; i++) {
       let x = i % this.areasX;
       let y = Math.floor(i / this.areasX);
@@ -179,89 +182,5 @@ export class Forest {
 
       this.areaCoordinates.push({xMin, yMin, xMax, yMax});
     }
-  }
-}
-export class Tree {
-  constructor() {
-    this.points   = [];
-    this.polygons = [];
-    this.color = getRandomColor();
-    this.faces = [];
-    this.polygon;
-    this.center;
-  }
-
-  createEnvelope() {
-    let toPoly = [];
-    this.polygons.forEach(polygon => {
-      toPoly.push( { regions: [polygon ], inverted: false} )
-    });
-
-    var segments = PolyBool.segments(toPoly[0]);
-    for (var i = 1; i < toPoly.length; i++){
-      var seg2 = PolyBool.segments(toPoly[i]);
-      var comb = PolyBool.combine(segments, seg2);
-      segments = PolyBool.selectUnion(comb);
-    }
-
-    this.polygon = PolyBool.polygon(segments).regions[0];
-    let avgX = 0;
-    let avgY = 0;
-    this.polygon.forEach(element => {
-      avgX += element[0];
-      avgY += element[1];
-    });
-    this.center = [avgX/this.polygon.length, avgY/this.polygon.length];
-  }
-
-  drawEnvelope(curve) {
-    beginShape();
-    if(curve) {
-      this.polygon.forEach(v => curveVertex(v[0], v[1]));
-    } else {
-      this.polygon.forEach(v => vertex(v[0], v[1]));
-    }
-    endShape(CLOSE);
-  }
-
-  draw(color = true) {
-    this.polygons.forEach( (polygon, i) => {
-      if(color)
-        fill(this.color);
-      beginShape();
-      for (let p of polygon) {
-        vertex(p[0], p[1]);
-        // curveVertex(p[0], p[1]);
-      }
-      endShape(CLOSE);
-    });
-
-    this.points.forEach( (p, i) => {
-      ellipse(p[0], p[1], 5, 5);
-    })
-  }
-
-  drawBasicThrunk() {
-    let base = [this.center[0]+20, this.center[1] + 1000]
-    let direction = [base[0] - this.center[0], base[1] - this.center[1]];
-
-    // fill(36, 18, 10);
-    // line(base[0], base[1], base[0] - direction[0], base[1] - direction[1]);
-
-    strokeWeight(1);
-    stroke(0)
-    // noStroke()
-    // fill(36, 18, 10);
-    noFill()
-    circle(this.center[0], this.center[1], 10);
-    circle(base[0], base[1], 10);
-
-    for(let i=0; i < 50; i++) {
-      let x = this.center[0] + direction[0] * i/50 +noise(i*10)*20;
-      let y = this.center[1] + direction[1] * i/50 +noise(i*10)*20;
-      direction = [base[0] - x, base[1] - y];
-      circle(x, y, (2+i/4)*random(7, 8));
-    }
-
   }
 }

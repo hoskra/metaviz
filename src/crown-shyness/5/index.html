@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="canvas">
+  <meta name="author" content="hoskra">
+  <title>Crown shyness</title>
+  <style>
+    * {overflow: hidden;}
+    body {
+      margin: 0;
+      font-family: 'Courier New', Courier, monospace;
+    }
+  </style>
+</head>
+<body>
+
+</body>
+<script type="module">
+
+import p5 from 'p5';
+import * as d3 from 'd3';
+import { Delaunay } from 'd3-delaunay';
+import { Forest, Tree } from './forest';
+
+// config variables
+let cnt = 400;  // more than cca 400 has no effect
+
+// help variables
+let W = window.innerWidth ;
+let H = window.innerHeight;
+let f = 0;
+let forest;
+
+function setup() {
+  let canvas = createCanvas(W, H, WEBGL)
+  forest = new Forest(W, H, cnt);
+  // noLoop()
+}
+function draw() {
+  f += 0.01
+
+  // forest.move(f);
+  push();
+  translate(-W/2, -H/2);
+  forest.moveAndRegenerate(f);
+  forest.drawAll();
+  forest.drawThrunks();
+  pop()
+
+  // let x         = sin(f) * 10;
+  // let y         = cos(f) * 10;
+  // let z         = (height/2) / tan(PI/6);
+  // let centerX   = 0;
+  // let centerY   = 0;
+  // let centerZ   = 0;
+  // let upX       = 0;
+  // let upY       = 1;
+  // let upZ       = 1;
+
+  // if (mouseX > W/4 && mouseX < W/4*3 && mouseY > H/4 && mouseY < H/4*3) {
+
+  //   let dc = dist(W/2,H/2,mouseX, mouseY);
+  //   centerX = map(mouseX, 0, W/4, 0, W/8) - W/2;
+  //   centerY = map(mouseY, 0, H/4, 0, H/8) - H/2;
+  //   centerX = (mouseX - W/2)*0.3;
+  //   centerY = (mouseY - H/2)*0.3;
+
+  // }
+
+  // camera(x, y, z, centerX, centerY, centerZ, upX, upY, upZ);
+
+}
+
+window.setup = setup;
+window.draw = draw;
+
+</script>
+</html>

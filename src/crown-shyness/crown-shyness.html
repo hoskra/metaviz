@@ -216,22 +216,22 @@ function setup() {
   }], rr(150,200), W*spacing, rr(W/3,2*W/3), rr(10,15), -PI/2);
   ls4.drawTree(rr(1,2));
 
-  loadPixels();
+  // loadPixels();
 
-  r = 300
-  for(let i=0;i<W;i++) {
-    for(let j=0;j<W;j++) {
-      let index = (i + j * W) * 4;
+  // r = 300
+  // for(let i=0;i<W;i++) {
+  //   for(let j=0;j<W;j++) {
+  //     let index = (i + j * W) * 4;
 
-      if ( (pow((i-W/2),2))+pow((j-W/2),2) > pow(r, 2) ) {
-        pixels[index + 0] = 255;
-        pixels[index + 1] = 255;
-        pixels[index + 2] = 255;
-        pixels[index + 3] = 255;
-      }
-    }
-  }
-  updatePixels();
+  //     if ( (pow((i-W/2),2))+pow((j-W/2),2) > pow(r, 2) ) {
+  //       pixels[index + 0] = 255;
+  //       pixels[index + 1] = 255;
+  //       pixels[index + 2] = 255;
+  //       pixels[index + 3] = 255;
+  //     }
+  //   }
+  // }
+  // updatePixels();
 }
 
 function draw() {
