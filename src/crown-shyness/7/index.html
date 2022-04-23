@@ -1,0 +1,127 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="canvas">
+  <meta name="author" content="hoskra">
+  <title>Crown shyness</title>
+  <style>
+    * {overflow: hidden;}
+    body {
+      margin: 0;
+      font-family: 'Courier New', Courier, monospace;
+    }
+  </style>
+</head>
+<body>
+
+</body>
+<script type="module">
+
+import p5 from 'p5';
+import * as d3 from 'd3';
+import { Delaunay } from 'd3-delaunay';
+import { getPoints, getPolygons, ColorTheme } from './utils';
+
+// config vars
+let far = -4000;
+let sizeMult = 50;
+let minFov = Math.PI*0.6;
+let maxFov = Math.PI*0.92;
+let treeCnt = 20;
+let treeSpacing = 2000;
+
+let points = [];
+let polygons = [];
+let W = window.innerWidth;
+let H = window.innerHeight;
+let choice, ct, fov;
+let f = 0;
+
+function getFov() {
+  let aspect = W < H ? W / H : H / W;
+  if(aspect < 0.3) {
+    fov = minFov;
+  } else if(aspect >= 0.4) {
+    fov = maxFov;
+  } else {
+    fov = map(aspect, 0.3, 0.4, minFov, maxFov);
+  }
+}
+
+window.addEventListener('resize', () => {
+  W = window.innerWidth;
+  H = window.innerHeight;
+  getFov();
+  resizeCanvas(W, H);
+  points    = getPoints(W * sizeMult, H * sizeMult, treeCnt, treeSpacing);
+  polygons  = getPolygons(points, W * sizeMult, H * sizeMult, 2.6);
+});
+
+window.onwheel = e => {
+  if(e.deltaY >= 0 && fov < maxFov) fov += 0.01;
+  if(e.deltaY < 0 && fov > minFov) fov -= 0.01;
+}
+
+function setup() {
+  choice = floor(random(0, 6))
+  let canvas = createCanvas(W, H, WEBGL)
+  points    = getPoints(W * sizeMult, H * sizeMult, treeCnt, treeSpacing);
+  polygons  = getPolygons(points, W * sizeMult, H * sizeMult, 2.6);
+  ct = new ColorTheme();
+  getFov();
+}
+
+function draw() {
+  f += 0.01
+
+  ct.setBackground()
+
+  push();
+  translate(-(W*sizeMult)/2, -(H*sizeMult)/2);
+  noFill(0)
+  translate(0, 0, far)
+
+  points.forEach((p,i) => {
+    translate(p[0], p[1], 0)
+    translate(0, 0, 10000/2)
+    rotateX(3*PI/2)
+    stroke(0)
+    cone(200, 10000)
+    rotateX(-3*PI/2)
+    translate(0, 0, -10000/2)
+    translate(-p[0], -p[1], 0)
+  });
+  translate(0, 0, -far)
+
+  noStroke()
+  polygons.forEach((p,i) => {
+    ct.setFill(i, polygons.length)
+    beginShape();
+    p.forEach((p,i) => {  vertex(p[0], p[1], far); });
+    endShape(CLOSE);
+  });
+
+  pop()
+
+  let x         = sin(f) * 5;
+  let y         = cos(f) * 5;
+  let z         = (height/2) / tan(PI/6);
+  let centerX   = map(mouseX, 0, width, 0, 10);
+  let centerY   = map(mouseY, 0, width, 0, 10);
+  let centerZ   = 0;
+  let upX       = 0;
+  let upY       = 1;
+  let upZ       = 1;
+
+  camera(x, y, z, centerX, centerY, centerZ, upX, upY, upZ);
+  perspective(fov, width/height, 1, 10000);
+}
+
+window.setup = setup;
+window.draw = draw;
+
+</script>
+</html>
