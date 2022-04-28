@@ -20,10 +20,10 @@ export class CPenrose {
         / |
        /  | height
       /   |
-    A -- D
+     A -- D
     side/2
 
-    equilateral triangle's alpha = 360°/3 = 60°
+    equilateral triangle's alpha = 180/3 = 60°
 
     tan(60) = height/(side/2)
     height  = side/2 * tan(60)
