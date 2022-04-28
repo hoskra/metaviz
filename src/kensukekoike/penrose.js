@@ -15,7 +15,20 @@ Points were found as a result of this process:
   */
 export class CPenrose {
   constructor(side = 50) {
-    // height of triangle
+    /* height of equilateral triangle
+          C
+        / |
+       /  | height
+      /   |
+    A -- D
+    side/2
+
+    equilateral triangle's alpha = 360°/3 = 60°
+
+    tan(60) = height/(side/2)
+    height  = side/2 * tan(60)
+    height  = side * sqrt(3)/2
+    */
     this.h = side * Math.sqrt(3)/2
 
     // triangle coordinates
@@ -28,13 +41,13 @@ export class CPenrose {
     this.v = [this.C[0] - this.B[0], this.C[1] - this.B[1]];
     this.w = [this.A[0] - this.C[0], this.A[1] - this.C[1]];
 
-    // an example of linar coordinates generating penrose triangle
+    // an example of linar combination generating penrose triangle
     this.points = [[ 0,  0,  0],
-                   [-1,  0,  0],
-                   [-1,  0, -4],
-                   [ 3, -1,  0],
-                   [ 3, -1,  1],
                    [ 0,  0, -2],
+                   [ 2, -2,  0],
+                   [ 3, -1,  0],
+                   [ 0, 1,  -3],
+                   [-1,  0,  0],
                    [ 0,  0,  0]]
   }
 
@@ -48,7 +61,7 @@ export class CPenrose {
     this.points.forEach(p => {
       let tmp = [origin[0], origin[1]];
 
-      // add linear 
+      // add linear
       tmp[0] += p[0]*a[0];  tmp[1] += p[0]*a[1];
       tmp[0] += p[1]*b[0];  tmp[1] += p[1]*b[1];
       tmp[0] += p[2]*c[0];  tmp[1] += p[2]*c[1];

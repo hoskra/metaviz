@@ -89,14 +89,17 @@ function animation( time ) {
 	renderer.render( scene, camera );
 }
 
+let positionX = - 1.0;
+let positionY = - 1.0;
+
 // edit texture offset on mouse move
 function onDocumentMouseMove(event) {
   event.preventDefault();
   mouse.x = (event.clientX / window.innerWidth ) * 2;
   mouse.y = (event.clientY / window.innerHeight) * 2;
-  A.material.map.offset.x = 0.5 + Math.cos(mouse.x) * 0.3;
-	B.material.map.offset.y = 0.5 + Math.cos(mouse.y) * 0.3;
-	C.material.map.offset.x = 0.5 + Math.cos(mouse.y) * 0.3;
+  A.material.map.offset.x = positionX + Math.cos(mouse.x) * 0.3;
+	B.material.map.offset.y = positionY + Math.cos(mouse.y) * 0.3;
+	C.material.map.offset.x = positionX + Math.cos(mouse.y) * 0.3;
 }
 
 // edit texture offset on touch
@@ -105,9 +108,9 @@ function onDocumentMouseDown(event) {
     if(event.touches) {
       mouse.x = (event.touches[0].clientX / window.innerWidth ) * 2;
       mouse.y = (event.touches[0].clientY / window.innerHeight) * 2;
-      A.material.map.offset.x = 0.5 + Math.cos(mouse.x) * 0.3;
-      B.material.map.offset.y = 0.5 + Math.cos(mouse.y) * 0.3;
-      C.material.map.offset.x = 0.5 + Math.cos(mouse.y) * 0.3;
+      A.material.map.offset.x = positionX + Math.cos(mouse.x) * 0.3;
+      B.material.map.offset.y = positionY + Math.cos(mouse.y) * 0.3;
+      C.material.map.offset.x = positionX + Math.cos(mouse.y) * 0.3;
     }
   }
 }
