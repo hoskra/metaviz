@@ -4,7 +4,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="canvas">
+  <meta name="description" content="Digital artwork inspired by brilliant artist Kensuke Koike and physicist Roger Penrose.">
   <meta name="author" content="hoskra">
   <script src="../libs/three.js" defer></script>
 	<script src="../util/penroseUtils.js" defer></script>
@@ -16,129 +16,115 @@
 
 <script type="module">
 
-const camera = new THREE.PerspectiveCamera( 100, window.innerWidth / window.innerHeight, 0.01, 20 );
-camera.position.z = 1;
-let mouse = {x:0, y:0};
+import { CPenrose } from './penrose.js';
 
-const imgName = '../img/2.jpg';
+const IMAGE_PATH = '../img/2.jpg';
+const FLIPPED_ROTATION = Math.random() > 0.5;
 
+// function for adding mesh to the scene
 function addMesh(geometry, material) {
   const mesh = new THREE.Mesh(geometry, material);
   scene.add(mesh);
   return mesh;
 }
 
+// make mesh from coodrinates and globally defined image name
+function penrosePart(coordinates) {
+  const texture = new THREE.TextureLoader().load( IMAGE_PATH );
+  texture.wrapS = THREE.MirroredRepeatWrapping;
+  texture.wrapT = THREE.MirroredRepeatWrapping;
+  // texture.rotation = FLIPPED_ROTATION ? 120 * Math.PI / 180 : 0;
+
+  let textureMaterial = new THREE.MeshBasicMaterial( { map: texture } );
+  let geomShape = new THREE.ShapeBufferGeometry( new THREE.Shape(coordinates) );
+  return addMesh(geomShape, textureMaterial);
+}
+
+// set up scene
+const camera = new THREE.PerspectiveCamera( 100, window.innerWidth / window.innerHeight, 0.01, 20 );
 const scene = new THREE.Scene();
 const renderer = new THREE.WebGLRenderer( { antialias: true } );
+const mouse = { x: 0, y: 0 };
 renderer.setSize( window.innerWidth, window.innerHeight );
 renderer.setAnimationLoop( animation );
 document.body.appendChild( renderer.domElement );
+camera.position.z = 1;
 
-const geometry = new THREE.BoxGeometry(2,2,1 );
-const texture = new THREE.TextureLoader().load( imgName );
-let textureMat = new THREE.MeshBasicMaterial( { map: texture } );
+// add square
+const geometry = new THREE.BoxGeometry(2,2,1);
+const texture = new THREE.TextureLoader().load( IMAGE_PATH );
+const textureMat = new THREE.MeshBasicMaterial( { map: texture } );
+const square = new THREE.Mesh(geometry, textureMat);
+scene.add(square);
+square.position.z = -0.5;
 
-let a = addMesh(geometry, textureMat);
-a.position.z = -0.5;
+// add penrose
+let triangle_side = FLIPPED_ROTATION ? 0.1 : -0.1;
+let pen = new CPenrose(triangle_side);
+let A = penrosePart(pen.getA());
+let B = penrosePart(pen.getB());
+let C = penrosePart(pen.getC());
 
-
-const texture1 = new THREE.TextureLoader().load( imgName );
-texture1.offset = new THREE.Vector2(0.506350550381033,0.506350550381033)
-let textureMat1 = new THREE.MeshBasicMaterial( { map: texture1 } );
-
-const greenMat = new THREE.MeshBasicMaterial({color: 0x00ff00,side: THREE.DoubleSide,});
-const blueMat = new THREE.MeshBasicMaterial({color: 0x0000ff,side: THREE.DoubleSide,});
-const redMat = new THREE.MeshBasicMaterial({color: 0xff0000,side: THREE.DoubleSide,});
-
-
-const texture11 = new THREE.TextureLoader().load( imgName );
-texture11.offset = new THREE.Vector2(0.506350550381033,0.506350550381033)
-let textureMat11 = new THREE.MeshBasicMaterial( { map: texture11 } );
-let geomShape1 = new THREE.ShapeBufferGeometry(new THREE.Shape(gg));
-// let ggPenrose = addMesh(geomShape1,  greenMat);
-let ggPenrose = addMesh(geomShape1,  textureMat11);
-
-const texture22 = new THREE.TextureLoader().load( imgName );
-texture22.offset = new THREE.Vector2(0.506350550381033,0.506350550381033)
-let textureMat22 = new THREE.MeshBasicMaterial( { map: texture22 } );
-let geomShape2 = new THREE.ShapeBufferGeometry(new THREE.Shape(bb));
-// let bbPenrose = addMesh(geomShape2,  blueMat);
-let bbPenrose = addMesh(geomShape2,  textureMat22);
-
-
-const texture33 = new THREE.TextureLoader().load( imgName );
-texture33.offset = new THREE.Vector2(0.506350550381033,0.506350550381033)
-let textureMat33 = new THREE.MeshBasicMaterial( { map: texture33 } );
-let geomShape3 = new THREE.ShapeBufferGeometry(new THREE.Shape(rr));
-// let rrPenrose = addMesh(geomShape3,  redMat);
-let rrPenrose = addMesh(geomShape3,  textureMat33);
-
-
-rrPenrose.position.x += -0.07
-rrPenrose.position.y += 0.05
-rrPenrose.rotation.z = 120 * 0.00872665;
-
-bbPenrose.rotation.z = 360 * 0.00872665;
-bbPenrose.position.x += - 0.081;
-bbPenrose.position.y += - 0.037;
-
-ggPenrose.rotation.z = - 120 * 0.00872665;
+// set up texture offset
+A.material.map.offset.x = 0.5;
+A.material.map.offset.y = 0.5;
+B.material.map.offset.x = 0.5;
+B.material.map.offset.y = 0.5;
+C.material.map.offset.x = 0.5;
+C.material.map.offset.y = 0.5;
 
 // create threejs group
 const group = new THREE.Group();
-group.add(rrPenrose);
-group.add(bbPenrose);
-group.add(ggPenrose);
-
+group.add(A);
+group.add(B);
+group.add(C);
 scene.add(group);
 
-// scale object
-const scale = 1.5;
+// scale group
+const scale = 1.9;
 group.scale.set(scale, scale, scale);
 
-group.position.x += 0.1;
-
-console.log(texture11.offset.x)
-console.log(texture22.offset.y)
-console.log(texture33.offset.x)
-0.506350550381033
-0.506350550381033
-0.506350550381033
+// animation loop
 function animation( time ) {
-
-	texture11.offset.x += 0;
-	texture22.offset.y += 0;
-	texture33.offset.x -= 0;
-	// texture11.offset.x += Math.cos(time/1000)/500
-	// texture22.offset.y += Math.cos(time/1000)/500
-	// texture33.offset.x -= Math.cos(time/1000)/500
-
-	// group.rotation.z =  time/1000;
-  // group.position.z = Math.cos(time/1000)/5 + 0.2
-
 	renderer.render( scene, camera );
-
 }
 
-document.addEventListener('mousemove', onDocumentMouseMove, false);
+let positionX = - 1.0;
+let positionY = - 1.0;
 
+// edit texture offset on mouse move
 function onDocumentMouseMove(event) {
   event.preventDefault();
-  mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
-  mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
-
-  texture11.offset.x = 0.506350550381033 + Math.cos(mouse.x-mouse.y/2) * 0.2;
-	texture22.offset.y = 0.506350550381033 + Math.cos(mouse.y+mouse.x/2)* 0.2;
-	texture33.offset.x = 0.506350550381033 - Math.cos(mouse.x+mouse.y/2)* 0.2;
+  mouse.x = (event.clientX / window.innerWidth ) * 2;
+  mouse.y = (event.clientY / window.innerHeight) * 2;
+  A.material.map.offset.x = positionX + Math.cos(mouse.x) * 0.3;
+	B.material.map.offset.y = positionY + Math.cos(mouse.y) * 0.3;
+	C.material.map.offset.x = positionX + Math.cos(mouse.y) * 0.3;
 }
 
-window.addEventListener( 'resize', onWindowResize, false );
+// edit texture offset on touch
+function onDocumentMouseDown(event) {
+  if(event) {
+    if(event.touches) {
+      mouse.x = (event.touches[0].clientX / window.innerWidth ) * 2;
+      mouse.y = (event.touches[0].clientY / window.innerHeight) * 2;
+      A.material.map.offset.x = positionX + Math.cos(mouse.x) * 0.3;
+      B.material.map.offset.y = positionY + Math.cos(mouse.y) * 0.3;
+      C.material.map.offset.x = positionX + Math.cos(mouse.y) * 0.3;
+    }
+  }
+}
 
-function onWindowResize(){
+// resize on window resize
+function onWindowResize() {
   camera.aspect = window.innerWidth / window.innerHeight;
   camera.updateProjectionMatrix();
   renderer.setSize( window.innerWidth, window.innerHeight );
 }
 
+// add event listeners
+window.addEventListener('resize', onWindowResize, false );
+document.addEventListener('mousemove', onDocumentMouseMove, false);
+document.addEventListener('touchstart', onDocumentMouseDown, false);
 </script>
 </html>

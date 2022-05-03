@@ -57,8 +57,10 @@ function draw() {
 
 function drawHexagon(x, y, radius) {
   beginShape()
-  for(i = 0; i < 6; i++) {
-    vertex(x + radius*cos(PI/3*i),y + radius*sin(PI/3*i))
+  let sides = 6
+  let angle = (2*PI)/sides
+  for(i = 0; i < sides; i++) {
+    vertex(x + radius*cos(angle*i),y + radius*sin(angle*i))
   }
   endShape(CLOSE)
 }
